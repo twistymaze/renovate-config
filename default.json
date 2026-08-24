@@ -9,8 +9,13 @@
   ],
   "timezone": "America/Chicago",
   "minimumReleaseAge": "5 days",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
   "lockFileMaintenance": { "enabled": true },
   "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "description": "Fast-track security fixes, but keep a short 12h cooldown (their default bypasses minimumReleaseAge entirely)",
+    "minimumReleaseAge": "12 hours"
+  },
   "dependencyDashboardOSVVulnerabilitySummary": "all",
   "labels": ["dependencies"],
   "assignees": ["ervwalter"],
@@ -27,9 +32,9 @@
       "groupName": "all non-major dependencies"
     },
     {
-      "description": "Fast-track security fixes with a short 12h cooldown",
-      "matchCategories": ["security"],
-      "minimumReleaseAge": "12 hours"
+      "description": "Pinning to what is already in use introduces nothing new, so skip the release-age gate for pin updates",
+      "matchUpdateTypes": ["pin", "pinDigest"],
+      "minimumReleaseAge": null
     }
   ]
 }

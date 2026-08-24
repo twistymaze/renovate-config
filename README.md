@@ -23,6 +23,11 @@ so it gets noticed and merged manually. Includes:
 - `config:recommended`, semantic commits, dependency dashboard
 - Digest pinning for Docker images and GitHub Actions (supply-chain hygiene)
 - 5-day minimum release age (supply-chain cooldown); security fixes fast-tracked to 12h
+  (via `vulnerabilityAlerts`, whose default would otherwise skip the cooldown entirely)
+- Updates with no release timestamp (e.g. GitHub Action digest bumps) are treated as
+  stable rather than leaving `renovate/stability-days` pending forever
+  (`minimumReleaseAgeBehaviour: timestamp-optional`); `pin`/`pinDigest` updates skip the
+  cooldown since they only pin what is already in use
 - OSV vulnerability alerts
 - Major updates batched into one PR per dependency manager, separate from the non-major batch
 - All non-major updates batched into a single PR
