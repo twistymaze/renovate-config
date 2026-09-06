@@ -32,7 +32,7 @@ so it gets noticed and merged manually. Includes:
 - Major updates batched into one PR per dependency manager, separate from the non-major batch
 - All non-major updates batched into a single PR
 
-Use this for repos that should review/merge dependency PRs by hand (e.g. trendweight).
+Use this for repos that should review/merge dependency PRs by hand.
 
 ### `:auto-merge`
 
@@ -73,3 +73,60 @@ jobs:
 The reusable workflow enables GitHub squash auto-merge on a Renovate PR once
 its required checks pass, gated to same-repo `renovate[bot]` PRs carrying the
 `automerge` label.
+
+### Optional authentication
+
+Existing callers need no changes: without credentials the workflow uses
+`GITHUB_TOKEN`. This can merge PRs, but GitHub suppresses subsequent `push`
+workflows, including builds and release automation.
+
+For repositories that need those workflows, use a private GitHub App:
+
+```yaml
+jobs:
+  call:
+    uses: ervwalter/renovate-config/.github/workflows/automerge.yml@main
+    with:
+      app-client-id: ${{ vars.AUTOMERGE_APP_CLIENT_ID }}
+    secrets:
+      app-private-key: ${{ secrets.AUTOMERGE_APP_PRIVATE_KEY }}
+```
+
+Pin the workflow reference to a reviewed commit SHA in consumers. Create the App
+under your GitHub account, disable webhooks, and allow installation only on your
+account. Grant repository Contents and Pull requests read/write, and Workflows
+write (needed for dependency PRs that update workflow files). Metadata read access
+is automatic. No account, organization, or administration permissions are needed.
+Install it on selected repositories only. Save its client ID as the repository
+variable `AUTOMERGE_APP_CLIENT_ID`, and its generated PEM private key as the Actions
+secret `AUTOMERGE_APP_PRIVATE_KEY`. No OAuth client secret or callback is needed.
+
+The official token action creates a short-lived installation token scoped to the
+calling repository and revokes it after the job. The App must not appear in any
+branch-protection or ruleset bypass list. Configure required checks and require
+the branch to be up to date; the workflow relies on those GitHub protections.
+An owner's separate admin bypass can remain enabled.
+
+Alternatively, pass a token explicitly:
+
+```yaml
+jobs:
+  call:
+    uses: ervwalter/renovate-config/.github/workflows/automerge.yml@main
+    secrets:
+      automerge-token: ${{ secrets.AUTOMERGE_TOKEN }}
+```
+
+A PAT acts as its owner, including their bypass privileges. Prefer the App when
+owners can bypass required checks. Never put a token or private key in workflow
+inputs or source control. Incomplete App credentials, conflicting authentication
+methods, or token-generation failures fail the job; only absent credentials use
+the default fallback.
+
+The `manual-review` label prevents this workflow from enabling auto-merge. Adding
+it does not cancel auto-merge that was already enabled; disable that on the PR
+separately. The merge command checks the event's head SHA to avoid acting on a
+newer revision from a stale workflow run.
+
+See GitHub's [workflow token behavior](https://docs.github.com/en/actions/concepts/security/github_token)
+and [App setup guide](https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app).
