@@ -31,6 +31,7 @@ so it gets noticed and merged manually. Includes:
 - OSV vulnerability alerts
 - Major updates batched into one PR per dependency manager, separate from the non-major batch
 - All non-major updates batched into a single PR
+- No hourly PR creation limit; Renovate's default concurrency limits still apply
 
 Use this for repos that should review/merge dependency PRs by hand.
 
