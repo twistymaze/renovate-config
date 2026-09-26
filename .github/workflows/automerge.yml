@@ -9,6 +9,13 @@ name: automerge (reusable)
 # label, which only write-holders / Renovate can apply. Callers trigger on
 # `pull_request` (not pull_request_target) and no PR code is checked out or
 # executed, so fork PRs get a read-only token and the RCE class doesn't apply.
+#
+# Copilot handoff: when Copilot cloud agent pushes fixes to a Renovate PR,
+# auto-merge is turned off so a green intermediate commit can't merge while
+# Copilot is still working. When Copilot finishes it requests a review; that
+# event turns auto-merge back on, pinned to Copilot's final commit. Other
+# non-Renovate pushes don't re-enable auto-merge. Callers must include
+# `review_requested` in their pull_request trigger types.
 
 on:
   workflow_call:
@@ -35,7 +42,11 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.user.login == 'renovate[bot]' &&
       contains(github.event.pull_request.labels.*.name, 'automerge') &&
-      !contains(github.event.pull_request.labels.*.name, 'manual-review')
+      !contains(github.event.pull_request.labels.*.name, 'manual-review') &&
+      (github.event.action != 'synchronize' ||
+        contains(fromJSON('["renovate[bot]","Copilot","copilot-swe-agent[bot]"]'), github.event.sender.login)) &&
+      (github.event.action != 'review_requested' ||
+        contains(fromJSON('["Copilot","copilot-swe-agent[bot]"]'), github.event.sender.login))
     runs-on: ubuntu-latest
     steps:
       - name: Validate authentication configuration
@@ -66,7 +77,22 @@ jobs:
           permission-pull-requests: write
           permission-workflows: write
 
+      - name: Disable auto-merge while Copilot is working
+        if: >
+          github.event.action == 'synchronize' &&
+          github.event.sender.login != 'renovate[bot]'
+        run: |
+          if [[ "$(gh pr view "$PR_URL" --json autoMergeRequest --jq '.autoMergeRequest != null')" == "true" ]]; then
+            gh pr merge --disable-auto "$PR_URL"
+          fi
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token || secrets.automerge-token || github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+
       - name: Enable squash auto-merge
+        if: >
+          github.event.action != 'synchronize' ||
+          github.event.sender.login == 'renovate[bot]'
         run: gh pr merge --auto --squash --match-head-commit "$PR_HEAD_SHA" "$PR_URL"
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token || secrets.automerge-token || github.token }}

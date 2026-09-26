@@ -62,7 +62,7 @@ Repos on the `:auto-merge` preset add a thin caller at
 name: automerge
 on:
   pull_request:
-    types: [opened, reopened, synchronize, labeled]
+    types: [opened, reopened, synchronize, labeled, review_requested]
 permissions:
   contents: write
   pull-requests: write
@@ -74,6 +74,10 @@ jobs:
 The reusable workflow enables GitHub squash auto-merge on a Renovate PR once
 its required checks pass, gated to same-repo `renovate[bot]` PRs carrying the
 `automerge` label.
+
+If Copilot cloud agent pushes fixes to a Renovate PR, auto-merge is turned off
+until Copilot finishes and requests a review, then re-enabled for its final
+commit. This needs `review_requested` in the caller's trigger types.
 
 ### Optional authentication
 
