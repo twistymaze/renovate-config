@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>ervwalter/renovate-config:default"],
+  "extends": ["local>twistymaze/renovate-config:default"],
   "vulnerabilityAlerts": {
     "description": "Security fixes: auto-merge via label, no assignee",
     "addLabels": ["automerge"],

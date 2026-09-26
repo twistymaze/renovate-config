@@ -1,7 +1,7 @@
 # renovate-config
 
 Shared [Renovate](https://docs.renovatebot.com/) configuration presets for
-[@ervwalter](https://github.com/ervwalter)'s repositories, plus a reusable
+[twistymaze](https://github.com/twistymaze) repositories, plus a reusable
 auto-merge workflow.
 
 ## Presets
@@ -13,7 +13,7 @@ Reference these from a repo's `.github/renovate.json` via `extends`.
 ```json
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>ervwalter/renovate-config:default"]
+  "extends": ["github>twistymaze/renovate-config:default"]
 }
 ```
 
@@ -40,7 +40,7 @@ Use this for repos that should review/merge dependency PRs by hand.
 ```json
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>ervwalter/renovate-config:auto-merge"]
+  "extends": ["github>twistymaze/renovate-config:auto-merge"]
 }
 ```
 
@@ -68,7 +68,7 @@ permissions:
   pull-requests: write
 jobs:
   call:
-    uses: ervwalter/renovate-config/.github/workflows/automerge.yml@main
+    uses: twistymaze/renovate-config/.github/workflows/automerge.yml@main
 ```
 
 The reusable workflow enables GitHub squash auto-merge on a Renovate PR once
@@ -86,7 +86,7 @@ For repositories that need those workflows, use a private GitHub App:
 ```yaml
 jobs:
   call:
-    uses: ervwalter/renovate-config/.github/workflows/automerge.yml@main
+    uses: twistymaze/renovate-config/.github/workflows/automerge.yml@main
     with:
       app-client-id: ${{ vars.AUTOMERGE_APP_CLIENT_ID }}
     secrets:
@@ -113,7 +113,7 @@ Alternatively, pass a token explicitly:
 ```yaml
 jobs:
   call:
-    uses: ervwalter/renovate-config/.github/workflows/automerge.yml@main
+    uses: twistymaze/renovate-config/.github/workflows/automerge.yml@main
     secrets:
       automerge-token: ${{ secrets.AUTOMERGE_TOKEN }}
 ```

@@ -1,6 +1,6 @@
 name: automerge (reusable)
 
-# Reusable auto-merge workflow for Renovate PRs across ervwalter repos.
+# Reusable auto-merge workflow for Renovate PRs across twistymaze repos.
 # Called by each auto-merge repo's thin caller workflow. Enables GitHub
 # auto-merge (squash) on a Renovate PR once its required checks pass.
 #
