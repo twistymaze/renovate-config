@@ -32,6 +32,12 @@ so it gets noticed and merged manually. Includes:
 - Major updates batched into one PR per dependency manager, separate from the non-major batch
 - All non-major updates batched into a single PR
 - No hourly PR creation limit; Renovate's default concurrency limits still apply
+- Temporary: `npmrc: "allow-remote=all"` (merged with each repo's `.npmrc`) to work
+  around npm 12 rejecting official registry tarballs during bundled-dependency
+  inspection (`EALLOWREMOTE`, [npm/cli#9800](https://github.com/npm/cli/issues/9800)).
+  This applies only to Renovate runs, not local or CI npm. A repo that sets its own
+  `npmrc` replaces this value. Remove it once the hosted Renovate runner ships the
+  upstream fix.
 
 Use this for repos that should review/merge dependency PRs by hand.
 
