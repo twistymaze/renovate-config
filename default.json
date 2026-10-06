@@ -12,6 +12,8 @@
   "minimumReleaseAge": "5 days",
   "minimumReleaseAgeBehaviour": "timestamp-optional",
   "lockFileMaintenance": { "enabled": true },
+  "npmrc": "allow-remote=all",
+  "npmrcMerge": true,
   "osvVulnerabilityAlerts": true,
   "vulnerabilityAlerts": {
     "description": "Fast-track security fixes, but keep a short 12h cooldown (their default bypasses minimumReleaseAge entirely)",
